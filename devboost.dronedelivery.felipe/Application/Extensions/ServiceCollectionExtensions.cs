@@ -81,7 +81,7 @@ namespace devboost.dronedelivery.felipe
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc(ProjectConsts.API_VERSION, new OpenApiInfo { Title = ProjectConsts.PROJECT_NAME, Version = API_VERSION });
+                c.SwaggerDoc(ProjectConsts.API_VERSION, new OpenApiInfo { Title = ProjectConsts.PROJECT_NAME, Version = ProjectConsts.API_VERSION });
                 var xmlFile = Assembly.GetExecutingAssembly().GetName().Name + ProjectConsts.XML_EXTENSION;
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
