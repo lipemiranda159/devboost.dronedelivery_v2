@@ -42,17 +42,13 @@ namespace devboost.dronedelivery.felipe.Security
                 await _securityClientProvider.CreateUser(
                     new Cliente()
                     {
-                        UserName = "admin_drone",
-                        Email = "admin-apiprodutos@teste.com.br",
-                        EmailConfirmed = true
+                        Nome = "admin_drone",
                     }, "AdminAPIDrone01!", Roles.ROLE_API_DRONE);
 
                 await _securityClientProvider.CreateUser(
                     new Cliente()
                     {
-                        UserName = "usuario_drone",
-                        Email = "usrinvalido-apiprodutos@teste.com.br",
-                        EmailConfirmed = true
+                        Nome = "usuario_drone",
                     }, "UsrInvAPIDrone01!");
             }
         }
