@@ -1,5 +1,4 @@
 using devboost.dronedelivery.felipe.DTO.Constants;
-using devboost.dronedelivery.felipe.DTO.Models;
 using devboost.dronedelivery.felipe.EF.Data;
 using devboost.dronedelivery.felipe.Security;
 using devboost.dronedelivery.felipe.Security.Interfaces;
