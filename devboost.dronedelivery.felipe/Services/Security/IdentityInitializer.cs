@@ -43,12 +43,18 @@ namespace devboost.dronedelivery.felipe.Security
                     new Cliente()
                     {
                         Nome = "admin_drone",
+                        Latitude = 0,
+                        Longitude = 0,
+                        UserName = "admin_drone"
                     }, "AdminAPIDrone01!", Roles.ROLE_API_DRONE);
 
                 await _securityClientProvider.CreateUser(
                     new Cliente()
                     {
                         Nome = "usuario_drone",
+                        Latitude = 0,
+                        Longitude = 0,
+                        UserName = "admin_drone"
                     }, "UsrInvAPIDrone01!");
             }
         }
