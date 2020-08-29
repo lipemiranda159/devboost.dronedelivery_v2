@@ -34,17 +34,5 @@ namespace devboost.dronedelivery.felipe.Controllers
         {
             await _securityClientProvider.CreateUser(cliente, cliente.Password);
         }
-
-        // PUT api/<ClientesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<ClientesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }

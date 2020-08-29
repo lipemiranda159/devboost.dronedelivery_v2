@@ -11,17 +11,14 @@ namespace devboost.dronedelivery.felipe.Security
     {
         private readonly ISecurityClientProvider _securityClientProvider;
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<Cliente> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
         public IdentityInitializer(
             ApplicationDbContext context,
-            UserManager<Cliente> userManager,
             RoleManager<IdentityRole> roleManager,
             ISecurityClientProvider securityClientProvider)
         {
             _context = context;
-            _userManager = userManager;
             _roleManager = roleManager;
             _securityClientProvider = securityClientProvider;
         }

@@ -40,7 +40,6 @@ namespace devboost.dronedelivery.felipe
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             ApplicationDbContext context,
-            UserManager<Cliente> userManager,
             RoleManager<IdentityRole> roleManager,
             ISecurityClientProvider securityClientProvider)
         {
@@ -49,7 +48,7 @@ namespace devboost.dronedelivery.felipe
                 app.UseDeveloperExceptionPage();
             }
 
-            new IdentityInitializer(context, userManager, roleManager, securityClientProvider).Initialize().Wait();
+            new IdentityInitializer(context, roleManager, securityClientProvider).Initialize().Wait();
 
             // Swagger
             app.UseSwagger()
