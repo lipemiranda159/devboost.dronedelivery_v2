@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace devboost.dronedelivery.felipe.DTO.Models
 {
     public class PedidoDrone
-    {        
+    {
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Drone Id deve ser informado!")]
@@ -14,7 +14,7 @@ namespace devboost.dronedelivery.felipe.DTO.Models
 
         [Required(ErrorMessage = "Pedido Id deve ser informado!")]
         public int PedidoId { get; set; }
-        
+
         public Pedido Pedido { get; set; }
 
         [Required(ErrorMessage = "Distancia deve ser informada!")]

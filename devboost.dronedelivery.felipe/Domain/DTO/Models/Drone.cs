@@ -6,9 +6,9 @@ namespace devboost.dronedelivery.felipe.DTO.Models
     {
         [Key]
         public int Id { get; set; }
-        
+
         [Required(ErrorMessage = "Capacidade deve ser informada!")]
-        [Range(1, int.MaxValue, ErrorMessage ="A capacidade minima deve ser 1.")]
+        [Range(1, int.MaxValue, ErrorMessage = "A capacidade minima deve ser 1.")]
         public int Capacidade { get; set; }
 
         [Required(ErrorMessage = "Velocidade deve ser informada!")]

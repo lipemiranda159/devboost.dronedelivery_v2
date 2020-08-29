@@ -19,7 +19,7 @@ namespace devboost.dronedelivery.felipe.DTO.Models
 
         [Required(ErrorMessage = "Situacao deve ser informada!")]
         public int Situacao { get; set; }
-        
+
         public DateTime DataUltimaAlteracao { get; set; }
         public DateTime DataHoraFinalizacao { get; set; }
     }
