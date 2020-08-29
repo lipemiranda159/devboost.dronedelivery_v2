@@ -79,18 +79,19 @@ namespace devboost.dronedelivery.felipe
             services.AddCors();
 
         }
-    }
-
-    public static void AddSwagger(this IServiceCollection services)
-    {
-
-        services.AddSwaggerGen(c =>
+        public static void AddSwagger(this IServiceCollection services)
         {
-            c.SwaggerDoc(ProjectConsts.API_VERSION, new OpenApiInfo { Title = ProjectConsts.PROJECT_NAME, Version = API_VERSION });
-            var xmlFile = Assembly.GetExecutingAssembly().GetName().Name + ProjectConsts.XML_EXTENSION;
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            c.IncludeXmlComments(xmlPath);
-        });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc(ProjectConsts.API_VERSION, new OpenApiInfo { Title = ProjectConsts.PROJECT_NAME, Version = API_VERSION });
+                var xmlFile = Assembly.GetExecutingAssembly().GetName().Name + ProjectConsts.XML_EXTENSION;
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+        }
+
     }
+
 
 }
