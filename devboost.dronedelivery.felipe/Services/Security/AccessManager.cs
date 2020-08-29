@@ -5,20 +5,20 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Principal;
-
+using System.Threading.Tasks;
 
 namespace devboost.dronedelivery.felipe.Security
 {
     public class AccessManager
     {
-        private UserManager<ApplicationUser> _userManager;
-        private SignInManager<ApplicationUser> _signInManager;
+        private UserManager<Cliente> _userManager;
+        private SignInManager<Cliente> _signInManager;
         private SigningConfigurations _signingConfigurations;
         private TokenConfigurations _tokenConfigurations;
 
         public AccessManager(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
+            UserManager<Cliente> userManager,
+            SignInManager<Cliente> signInManager,
             SigningConfigurations signingConfigurations,
             TokenConfigurations tokenConfigurations)
         {
@@ -28,27 +28,20 @@ namespace devboost.dronedelivery.felipe.Security
             _tokenConfigurations = tokenConfigurations;
         }
 
-        public bool ValidateCredentials(User user)
+        public async Task<bool> ValidateCredentialsAsync(Cliente cliente)
         {
             bool credenciaisValidas = false;
-            if (user != null && !String.IsNullOrWhiteSpace(user.UserID))
+            if (cliente != null && !string.IsNullOrWhiteSpace(cliente.UserName))
             {
-                // Verifica a existência do usuário nas tabelas do
-                // ASP.NET Core Identity
-                var userIdentity = _userManager
-                    .FindByNameAsync(user.UserID).Result;
+                var userIdentity = await _userManager.FindByNameAsync(cliente.UserName);
                 if (userIdentity != null)
                 {
-                    // Efetua o login com base no Id do usuário e sua senha
-                    var resultadoLogin = _signInManager
-                        .CheckPasswordSignInAsync(userIdentity, user.Password, false)
-                        .Result;
+                    var resultadoLogin = await _signInManager
+                        .CheckPasswordSignInAsync(userIdentity, cliente.Password, false);
                     if (resultadoLogin.Succeeded)
                     {
-                        // Verifica se o usuário em questão possui
-                        // a role Acesso-APIProdutos
-                        credenciaisValidas = _userManager.IsInRoleAsync(
-                            userIdentity, Roles.ROLE_API_DRONE).Result;
+                        credenciaisValidas = await  _userManager.IsInRoleAsync(
+                            userIdentity, Roles.ROLE_API_DRONE);
                     }
                 }
             }
@@ -56,13 +49,13 @@ namespace devboost.dronedelivery.felipe.Security
             return credenciaisValidas;
         }
 
-        public Token GenerateToken(User user)
+        public Token GenerateToken(Cliente user)
         {
             ClaimsIdentity identity = new ClaimsIdentity(
-                new GenericIdentity(user.UserID, "Login"),
+                new GenericIdentity(user.UserName, "Login"),
                 new[] {
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
-                        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserID)
+                        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
                 }
             );
 

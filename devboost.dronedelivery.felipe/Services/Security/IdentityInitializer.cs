@@ -1,34 +1,40 @@
 ﻿using devboost.dronedelivery.felipe.DTO.Models;
 using devboost.dronedelivery.felipe.EF.Data;
+using devboost.dronedelivery.felipe.Security.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Threading.Tasks;
 
 namespace devboost.dronedelivery.felipe.Security
 {
     public class IdentityInitializer
     {
+        private readonly ISecurityClientProvider _securityClientProvider;
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<Cliente> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
         public IdentityInitializer(
             ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            UserManager<Cliente> userManager,
+            RoleManager<IdentityRole> roleManager,
+            ISecurityClientProvider securityClientProvider)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _securityClientProvider = securityClientProvider;
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
             if (_context.Database.EnsureCreated())
             {
-                if (!_roleManager.RoleExistsAsync(Roles.ROLE_API_DRONE).Result)
+                var roleExists = await _roleManager.RoleExistsAsync(Roles.ROLE_API_DRONE);
+                if (!roleExists)
                 {
-                    var resultado = _roleManager.CreateAsync(
-                        new IdentityRole(Roles.ROLE_API_DRONE)).Result;
+                    var resultado = await _roleManager.CreateAsync(
+                        new IdentityRole(Roles.ROLE_API_DRONE));
                     if (!resultado.Succeeded)
                     {
                         throw new Exception(
@@ -36,38 +42,21 @@ namespace devboost.dronedelivery.felipe.Security
                     }
                 }
 
-                CreateUser(
-                    new ApplicationUser()
+                await _securityClientProvider.CreateUser(
+                    new Cliente()
                     {
                         UserName = "admin_drone",
                         Email = "admin-apiprodutos@teste.com.br",
                         EmailConfirmed = true
                     }, "AdminAPIDrone01!", Roles.ROLE_API_DRONE);
 
-                CreateUser(
-                    new ApplicationUser()
+                await _securityClientProvider.CreateUser(
+                    new Cliente()
                     {
                         UserName = "usuario_drone",
                         Email = "usrinvalido-apiprodutos@teste.com.br",
                         EmailConfirmed = true
                     }, "UsrInvAPIDrone01!");
-            }
-        }
-        private void CreateUser(
-            ApplicationUser user,
-            string password,
-            string initialRole = null)
-        {
-            if (_userManager.FindByNameAsync(user.UserName).Result == null)
-            {
-                var resultado = _userManager
-                    .CreateAsync(user, password).Result;
-
-                if (resultado.Succeeded &&
-                    !String.IsNullOrWhiteSpace(initialRole))
-                {
-                    _userManager.AddToRoleAsync(user, initialRole).Wait();
-                }
             }
         }
     }

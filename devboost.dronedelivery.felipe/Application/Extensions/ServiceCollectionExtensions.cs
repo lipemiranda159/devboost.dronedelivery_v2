@@ -7,6 +7,7 @@ using devboost.dronedelivery.felipe.Facade;
 using devboost.dronedelivery.felipe.Facade.Interface;
 using devboost.dronedelivery.felipe.Security;
 using devboost.dronedelivery.felipe.Security.Extensions;
+using devboost.dronedelivery.felipe.Security.Interfaces;
 using devboost.dronedelivery.felipe.Services;
 using devboost.dronedelivery.felipe.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -49,19 +50,19 @@ namespace devboost.dronedelivery.felipe
             // Configurando o uso da classe de contexto para
             // acesso às tabelas do ASP.NET Identity Core
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseInMemoryDatabase("InMemoryDatabase"));
+                options.UseSqlServer(configuration.GetConnectionString(ProjectConsts.CONNECTION_STRING_CONFIG)));
 
             // Ativando a utilização do ASP.NET Identity, a fim de
             // permitir a recuperação de seus objetos via injeção de
             // dependências
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<Cliente, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
             // Configurando a dependência para a classe de validação
             // de credenciais e geração de tokens
             services.AddScoped<AccessManager>();
-
+            services.AddScoped<ISecurityClientProvider, SecurityClientProvider>();
             var signingConfigurations = new SigningConfigurations();
             services.AddSingleton(signingConfigurations);
 
@@ -84,7 +85,12 @@ namespace devboost.dronedelivery.felipe
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc(ProjectConsts.API_VERSION, new OpenApiInfo { Title = ProjectConsts.PROJECT_NAME, Version = API_VERSION });
+                c.SwaggerDoc(ProjectConsts.API_VERSION, 
+                    new OpenApiInfo 
+                    { 
+                        Title = ProjectConsts.PROJECT_NAME, 
+                        Version = ProjectConsts.API_VERSION 
+                    });
                 var xmlFile = Assembly.GetExecutingAssembly().GetName().Name + ProjectConsts.XML_EXTENSION;
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);

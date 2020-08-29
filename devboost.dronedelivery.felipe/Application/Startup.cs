@@ -2,6 +2,7 @@ using devboost.dronedelivery.felipe.DTO.Constants;
 using devboost.dronedelivery.felipe.DTO.Models;
 using devboost.dronedelivery.felipe.EF.Data;
 using devboost.dronedelivery.felipe.Security;
+using devboost.dronedelivery.felipe.Security.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -39,18 +40,16 @@ namespace devboost.dronedelivery.felipe
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            UserManager<Cliente> userManager,
+            RoleManager<IdentityRole> roleManager,
+            ISecurityClientProvider securityClientProvider)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            // Criação de estruturas, usuários e permissões
-            // na base do ASP.NET Identity Core (caso ainda não
-            // existam)
-            new IdentityInitializer(context, userManager, roleManager).Initialize();
+            new IdentityInitializer(context, userManager, roleManager, securityClientProvider).Initialize().Wait();
 
             // Swagger
             app.UseSwagger()
