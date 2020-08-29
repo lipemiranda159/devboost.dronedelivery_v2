@@ -21,7 +21,7 @@ namespace devboost.dronedelivery.felipe.Controllers
             _userManager = userManager;
             _securityClientProvider = securityClientProvider;
         }
-
+        [Authorize]
         // POST api/<ClientesController>
         [HttpPost]
         public async Task Post([FromBody] Cliente cliente)
