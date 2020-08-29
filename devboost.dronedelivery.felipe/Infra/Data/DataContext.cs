@@ -1,4 +1,5 @@
-﻿using devboost.dronedelivery.felipe.DTO.Models;
+﻿using devboost.dronedelivery.felipe.DTO.Constants;
+using devboost.dronedelivery.felipe.DTO.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.IO;
@@ -18,13 +19,15 @@ namespace devboost.dronedelivery.felipe.EF.Data
 
         public DbSet<PedidoDrone> PedidoDrones { get; set; }
 
+        public DbSet<Cliente> Clientes { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
             .Build();
-            var connectionString = configuration.GetConnectionString("grupo4devboostdronedeliveryContext");
+            var connectionString = configuration.GetConnectionString(ProjectConsts.CONNECTION_STRING_CONFIG);
 
             optionsBuilder
                 .UseSqlServer(connectionString);

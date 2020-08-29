@@ -7,6 +7,7 @@ using devboost.dronedelivery.felipe.Facade;
 using devboost.dronedelivery.felipe.Facade.Interface;
 using devboost.dronedelivery.felipe.Security;
 using devboost.dronedelivery.felipe.Security.Extensions;
+using devboost.dronedelivery.felipe.Security.Interfaces;
 using devboost.dronedelivery.felipe.Services;
 using devboost.dronedelivery.felipe.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -26,6 +27,7 @@ namespace devboost.dronedelivery.felipe
     /// </summary>
     public static class ServiceCollectionExtensions
     {
+        private const string TOKEN_CONFIGURATION = "TokenConfigurations";
 
         public static void AddSingletons(this IServiceCollection services, IConfiguration configuration)
         {
@@ -37,51 +39,74 @@ namespace devboost.dronedelivery.felipe
             services.AddSingleton<IPedidoFacade, PedidoFacade>();
             services.AddSingleton<IDroneFacade, DroneFacade>();
             services.AddDbContext<DataContext>(options =>
-        options.UseSqlServer(configuration.GetConnectionString(ProjectConsts.CONNECTION_STRING_CONFIG)), ServiceLifetime.Singleton);
+            options.UseSqlServer(configuration.GetConnectionString(ProjectConsts.CONNECTION_STRING_CONFIG)), ServiceLifetime.Singleton);
 
         }
 
+        /// <summary>
+        /// Add auth configuration in service collection
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
         public static void AddAuth(this IServiceCollection services, IConfiguration configuration)
         {
-            // Configurando o uso da classe de contexto para
-            // acesso às tabelas do ASP.NET Identity Core
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseInMemoryDatabase("InMemoryDatabase"));
+                options.UseSqlServer(configuration.GetConnectionString(ProjectConsts.CONNECTION_STRING_CONFIG)));
 
-            // Ativando a utilização do ASP.NET Identity, a fim de
-            // permitir a recuperação de seus objetos via injeção de
-            // dependências
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<Cliente, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-
-            // Configurando a dependência para a classe de validação
-            // de credenciais e geração de tokens
             services.AddScoped<AccessManager>();
-
+            services.AddScoped<ISecurityClientProvider, SecurityClientProvider>();
             var signingConfigurations = new SigningConfigurations();
             services.AddSingleton(signingConfigurations);
 
             var tokenConfigurations = new TokenConfigurations();
             new ConfigureFromConfigurationOptions<TokenConfigurations>(
-                configuration.GetSection("TokenConfigurations"))
+                configuration.GetSection(TOKEN_CONFIGURATION))
                     .Configure(tokenConfigurations);
             services.AddSingleton(tokenConfigurations);
-
-            // Aciona a extensão que irá configurar o uso de
-            // autenticação e autorização via tokens
             services.AddJwtSecurity(
                 signingConfigurations, tokenConfigurations);
 
             services.AddCors();
 
         }
+        /// <summary>
+        /// Add swagger configuration
+        /// </summary>
+        /// <param name="services"></param>
         public static void AddSwagger(this IServiceCollection services)
         {
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc(ProjectConsts.API_VERSION, new OpenApiInfo { Title = ProjectConsts.PROJECT_NAME, Version = ProjectConsts.API_VERSION });
+                c.SwaggerDoc(ProjectConsts.API_VERSION,
+                    new OpenApiInfo
+                    {
+                        Title = ProjectConsts.PROJECT_NAME,
+                        Version = ProjectConsts.API_VERSION
+                    });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert JWT with Bearer into field",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+               {
+                 new OpenApiSecurityScheme
+                 {
+                   Reference = new OpenApiReference
+                   {
+                     Type = ReferenceType.SecurityScheme,
+                     Id = "Bearer"
+                   }
+                  },
+                  new string[] { }
+                }});
+
                 var xmlFile = Assembly.GetExecutingAssembly().GetName().Name + ProjectConsts.XML_EXTENSION;
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);

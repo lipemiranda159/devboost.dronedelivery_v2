@@ -2,6 +2,7 @@
 using devboost.dronedelivery.felipe.DTO;
 using devboost.dronedelivery.felipe.DTO.Constants;
 using devboost.dronedelivery.felipe.DTO.Enums;
+using devboost.dronedelivery.felipe.DTO.Extensions;
 using devboost.dronedelivery.felipe.DTO.Models;
 using devboost.dronedelivery.felipe.EF.Data;
 using devboost.dronedelivery.felipe.EF.Repositories.Interfaces;
@@ -58,7 +59,19 @@ namespace devboost.dronedelivery.felipe.EF.Repositories
             stringBuilder.AppendLine("select a.DroneId,");
             stringBuilder.AppendLine($"{situacao} as Situacao,");
             stringBuilder.AppendLine("a.Id as PedidoId");
+            if (status.IsEmTransito())
+            {
+                stringBuilder.AppendLine("C.Id as ClienteId");
+            }
             stringBuilder.AppendLine(" from PedidoDrones a");
+            if (status.IsEmTransito())
+            {
+
+                stringBuilder.AppendLine(" JOIN Pedido p");
+                stringBuilder.AppendLine(" ON p.Id = a.PedidoId");
+                stringBuilder.AppendLine(" JOIN Cliente C");
+                stringBuilder.AppendLine(" ON C.Id = p.ClienteId");
+            }
             stringBuilder.AppendLine($" where a.StatusEnvio <> {(int)status}");
             stringBuilder.AppendLine(" and a.DataHoraFinalizacao > dateadd(hour,-3,CURRENT_TIMESTAMP)");
             return stringBuilder.ToString();

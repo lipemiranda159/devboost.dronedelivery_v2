@@ -2,6 +2,7 @@
 using devboost.dronedelivery.felipe.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace devboost.dronedelivery.felipe.Controllers
 {
@@ -19,9 +20,9 @@ namespace devboost.dronedelivery.felipe.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public object Post([FromBody] User usuario, [FromServices] AccessManager accessManager)
+        public async Task<object> Post([FromBody] Cliente usuario, [FromServices] AccessManager accessManager)
         {
-            if (accessManager.ValidateCredentials(usuario))
+            if (await accessManager.ValidateCredentialsAsync(usuario))
             {
                 return accessManager.GenerateToken(usuario);
             }

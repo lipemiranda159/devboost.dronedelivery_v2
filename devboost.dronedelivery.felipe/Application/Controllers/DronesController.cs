@@ -12,7 +12,6 @@ namespace devboost.dronedelivery.felipe.Controllers
     /// <summary>
     /// Controller com operações referentes aos drones
     /// </summary>
-    [Authorize("Bearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class DronesController : ControllerBase
@@ -31,6 +30,7 @@ namespace devboost.dronedelivery.felipe.Controllers
         /// </summary>
         /// <returns></returns>
         // GET: api/Drones/5
+        [AllowAnonymous]
         [HttpGet("GetStatusDrone")]
         public async Task<ActionResult<List<StatusDroneDto>>> GetStatusDrone()
         {
